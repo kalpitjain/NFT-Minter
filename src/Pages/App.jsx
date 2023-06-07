@@ -11,105 +11,116 @@ function App() {
   const [isMintLoading, setIsMintLoading] = useState(false);
   const [isMintStarted, setIsMintStarted] = useState(false);
   const [mintHash, setMintHash] = useState("");
+  const [totalMinted, setTotalMinted] = useState(0n);
+  const { isConnected, address } = useAccount();
+
   useEffect(() => {
     setMounted(true);
     isConnected && getTotalSupply();
   }, []);
 
-  const [totalMinted, setTotalMinted] = useState(0n);
-  const { isConnected, address } = useAccount();
-
   async function mint(mintAmount) {
     setIsMintLoading(true);
-    let appContract;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const chainId = await provider
-      .getNetwork()
-      .then((network) => network.chainId);
 
-    if (chainId === 80001) {
-      appContract = {
-        contractAddress: Contract.MumbaiContractAddress,
-        contractAbi: Contract.abi,
-      };
-    } else if (chainId === 97) {
-      appContract = {
-        contractAddress: Contract.BNBContractAddress,
-        contractAbi: Contract.abi,
-      };
-    } else if (chainId === 5) {
-      appContract = {
-        contractAddress: Contract.GoerliContractAddresss,
-        contractAbi: Contract.abi,
-      };
-    }
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const chainId = await provider
+        .getNetwork()
+        .then((network) => network.chainId);
 
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-    const signer = provider.getSigner();
+      let appContract;
 
-    const contract = new ethers.Contract(
-      appContract.contractAddress,
-      appContract.contractAbi,
-      signer
-    );
+      if (chainId === 80001) {
+        appContract = {
+          contractAddress: Contract.MumbaiContractAddress,
+          contractAbi: Contract.abi,
+        };
+      } else if (chainId === 97) {
+        appContract = {
+          contractAddress: Contract.BNBContractAddress,
+          contractAbi: Contract.abi,
+        };
+      } else if (chainId === 5) {
+        appContract = {
+          contractAddress: Contract.GoerliContractAddresss,
+          contractAbi: Contract.abi,
+        };
+      } else {
+        throw new Error("Unsupported chain ID");
+      }
 
-    const tx = await contract.mint(mintAmount, {
-      gasLimit: 300000,
-    });
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        appContract.contractAddress,
+        appContract.contractAbi,
+        signer
+      );
 
-    setIsMintLoading(false);
-    setIsMintStarted(true);
+      const tx = await contract.mint(mintAmount, { gasLimit: 300000 });
 
-    await tx.wait();
+      setIsMintLoading(false);
+      setIsMintStarted(true);
 
-    setIsMintStarted(true);
-    setIsMinted(true);
+      await tx.wait();
 
-    setMintHash(tx.hash);
+      setIsMintStarted(true);
+      setIsMinted(true);
+      setMintHash(tx.hash);
 
-    if (tx.type === 2) {
-      setTotalMinted((prev) => {
-        return prev.toNumber() + 1;
-      });
-    } else {
-      window.location.reload();
+      if (tx.type === 2) {
+        setTotalMinted((prev) => prev.toNumber() + 1);
+      } else {
+        setIsMintStarted(false);
+        setIsMinted(false);
+        alert("Something Went Wrong! Please try once again.");
+      }
+    } catch (error) {
+      setIsMintStarted(false);
+      setIsMinted(false);
+      console.error("Error during minting:", error);
+      alert("Something Went Wrong! Please try once again.");
     }
   }
 
   async function getTotalSupply() {
-    let appContract;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const chainId = await provider
+        .getNetwork()
+        .then((network) => network.chainId);
 
-    const chainId = await provider
-      .getNetwork()
-      .then((network) => network.chainId);
+      let appContract;
 
-    if (chainId === 80001) {
-      appContract = {
-        contractAddress: Contract.MumbaiContractAddress,
-        contractAbi: Contract.abi,
-      };
-    } else if (chainId === 97) {
-      appContract = {
-        contractAddress: Contract.BNBContractAddress,
-        contractAbi: Contract.abi,
-      };
-    } else {
-      appContract = {
-        contractAddress: Contract.GoerliContractAddresss,
-        contractAbi: Contract.abi,
-      };
+      if (chainId === 80001) {
+        appContract = {
+          contractAddress: Contract.MumbaiContractAddress,
+          contractAbi: Contract.abi,
+        };
+      } else if (chainId === 97) {
+        appContract = {
+          contractAddress: Contract.BNBContractAddress,
+          contractAbi: Contract.abi,
+        };
+      } else {
+        appContract = {
+          contractAddress: Contract.GoerliContractAddresss,
+          contractAbi: Contract.abi,
+        };
+      }
+
+      const contract = new ethers.Contract(
+        appContract.contractAddress,
+        appContract.contractAbi,
+        provider
+      );
+
+      const supply = await contract.totalSupply();
+
+      setTotalMinted(supply);
+    } catch (error) {
+      console.error("Error retrieving total supply:", error);
     }
-
-    const contract = new ethers.Contract(
-      appContract.contractAddress,
-      appContract.contractAbi,
-      provider
-    );
-
-    const supply = await contract.totalSupply();
-
-    setTotalMinted(supply);
   }
 
   return (
