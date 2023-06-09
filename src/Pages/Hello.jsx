@@ -1,5 +1,13 @@
+import CheckNFT from "../components/CheckNFT";
+
 function Hello() {
-  return <div>Hello</div>;
+  return (
+    <div>
+      <div>
+        <CheckNFT />
+      </div>
+    </div>
+  );
 }
 
 export default Hello;

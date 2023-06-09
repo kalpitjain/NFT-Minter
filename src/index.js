@@ -17,6 +17,7 @@ import {
   trustWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import Dashboard from "./Pages/Dashboard";
 
 const { chains, provider } = configureChains(
   [polygonMumbai, goerli, bscTestnet],
@@ -53,6 +54,7 @@ root.render(
         <Router>
           <Routes>
             <Route path="/hello" element={<Hello />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/" element={<App />} />
           </Routes>
         </Router>

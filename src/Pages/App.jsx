@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import Contract from "../Contract.json";
 import FlipCard, { BackCard, FrontCard } from "../components/Flipcard";
 import { ethers } from "ethers";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const [mounted, setMounted] = useState(false);
@@ -13,6 +14,7 @@ function App() {
   const [mintHash, setMintHash] = useState("");
   const [totalMinted, setTotalMinted] = useState(0n);
   const { isConnected, address } = useAccount();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
@@ -70,6 +72,10 @@ function App() {
 
       if (tx.type === 2) {
         setTotalMinted((prev) => prev.toNumber() + 1);
+
+        setTimeout(() => {
+          navigate("/Hello");
+        }, 10000);
       } else {
         setIsMintStarted(false);
         setIsMinted(false);
