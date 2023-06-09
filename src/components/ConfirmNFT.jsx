@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Contract from "../Contract.json";
 import { ethers } from "ethers";
+import { useAccount } from "wagmi";
 
-const ConfirmNFT = ({ address, network }) => {
+function ConfirmNFT() {
+  const { address } = useAccount();
   const [hasNFT, setHasNFT] = useState(false);
   const navigate = useNavigate();
 
@@ -40,7 +42,7 @@ const ConfirmNFT = ({ address, network }) => {
         provider
       );
 
-      const supply = await contract.totalSupply();
+      const supply = await contract.totalSupplyOf(address);
 
       if (supply > 0) {
         setHasNFT(true);
@@ -66,6 +68,6 @@ const ConfirmNFT = ({ address, network }) => {
       )}
     </div>
   );
-};
+}
 
 export default ConfirmNFT;

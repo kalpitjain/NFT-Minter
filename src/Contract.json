@@ -1,5 +1,5 @@
 {
-  "MumbaiContractAddress": "0xb9591b937d97049Ac811d459913D22A33ecD8c8c",
+  "MumbaiContractAddress": "0x70B9B178709e29661870662CB9fd75773577CAf6",
   "BNBContractAddress": "0x34491e7B17518557349caa7E1f762f5E88E60993",
   "GoerliContractAddress": "0x238f8f4B958ED7C9685Bf902D55AD5f2Ab9FA36f",
   "abi": [
@@ -653,6 +653,25 @@
     {
       "inputs": [],
       "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "totalSupplyOf",
       "outputs": [
         {
           "internalType": "uint256",
