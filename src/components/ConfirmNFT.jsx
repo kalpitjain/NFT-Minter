@@ -1,16 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Contract from "../Contract.json";
 import { ethers } from "ethers";
-import { useAccount } from "wagmi";
 
 const ConfirmNFT = ({ address, network }) => {
-  const { address: walletAddress } = useAccount();
-  const [hasNFTs, setHasNFTs] = useState(false);
+  const [hasNFT, setHasNFT] = useState(false);
   const navigate = useNavigate();
 
-  async function hasNFT() {
+  async function checkNFT() {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const chainId = await provider
@@ -42,30 +40,25 @@ const ConfirmNFT = ({ address, network }) => {
         provider
       );
 
-      const supply = await contract.totalSupply(walletAddress);
+      const supply = await contract.totalSupply();
 
       if (supply > 0) {
-        setHasNFTs(true);
+        setHasNFT(true);
+
+        setTimeout(() => {
+          navigate("/Dashboard");
+        }, 10000);
+      } else {
+        setHasNFT(false);
       }
     } catch (error) {
       console.error("Error retrieving total supply:", error);
     }
   }
 
-  useEffect(() => {
-    hasNFT();
-  });
-
-  // Check if user has a Project Management NFT, if so, redirect them to /dashboard/projects page after 10 seconds
-  if (hasNFT) {
-    setTimeout(() => {
-      // navigate("/dashboard/projects");
-      navigate("/Dashboard");
-    }, 10000); // 10000 milliseconds = 10 seconds
-  }
-
   return (
     <div>
+      <button onClick={checkNFT}>Check NFT</button>
       {hasNFT ? (
         <p>You own a Project Management NFT! Well done!</p>
       ) : (

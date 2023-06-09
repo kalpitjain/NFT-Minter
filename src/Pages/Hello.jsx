@@ -3,9 +3,7 @@ import CheckNFT from "../components/CheckNFT";
 function Hello() {
   return (
     <div>
-      <div>
-        <CheckNFT />
-      </div>
+      <div>Hello</div>
     </div>
   );
 }

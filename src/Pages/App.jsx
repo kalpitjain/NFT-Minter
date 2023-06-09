@@ -5,6 +5,7 @@ import Contract from "../Contract.json";
 import FlipCard, { BackCard, FrontCard } from "../components/Flipcard";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
+import CheckNFT from "../components/CheckNFT";
 
 function App() {
   const [mounted, setMounted] = useState(false);
@@ -201,6 +202,7 @@ function App() {
           </FlipCard>
         </div>
       </div>
+      <CheckNFT />
     </div>
   );
 }
